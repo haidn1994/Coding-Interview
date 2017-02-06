@@ -106,12 +106,52 @@ int pretty_bsearch(int ar[], int len, int target)
 
 	while(first <= last)
 	{
-		mid = (first+last)/2;
+		// debuging용
+		printf("first:%d  last:%d\n", first, last);
+		// 그런데 이 중앙값을 찾는 로직도 최적화 여지가 있다.
+		// 또한 경우에 따라 정수 오버플로우 에러가 발생할 수 있는데,
+		// 이 부분에 대해서 다룬 웹 페이지와 부록(맨 아래)이 있다. 참고하도록 하라.
+
+		// 다 읽어 보았는가?
+		// 배열을 기반으로 만든 이진 탐색의 경우 first <= last인 signed int이며, 
+		// 탐색 실패시 대표적인 last와 first의 값은 다음과 같다.
+
+
+		// 맨 앞쪽의 원소보다 찾고자 하는 수가 작아서 못찾음 first = 0, last = -1
+		// 맨 뒤쪽의 원소보다 찾고자 하는 수가 커서 못찾음 first = len+1, last = len
+
+		// TODO 탐색실패 하지 않는다면,왜 last가 0미만이 될 수 없는지 증명해 볼 것!
+
+
+		/*
+		 	음수 아닌 정수 끼리의 곱셈(나눗셈도 마찬가지다.)은 언제나 음수 아닌 정수에 대해 닫혀 있다.
+
+			또한 대상이 양수 아니면 0이라 했을 때, 
+			/를 이용하면 바닥 평균(음수 아닌 정수)을 반환하고 
+			천장 평균을 반환하더라도 언제나 음수 아닌 정수를 반환한다.
+		
+			따라서 배열의 인덱스 범위는 음수 아닌 정수이므로, 
+			탐색에 실패하지 않는다면 언제나 음수 아닌 정수를 반환한다.
+
+			탈출 조건을 만족한다면, 어차피 mid의 값은 의미가 없어진다.
+			따라서 first = 0 last = -1인 경우가 유일하게 음수가 등장하는 경우이지만
+			mid 에 대입하기 전에 while에서 탈출한다.
+
+			결론적으로 언제나 배열 기반 이진 탐색 수행시, 
+			first와 last는 언제나 음수 아닌 정수로 간주 할 수 있다.
+
+			이 경우에는 (x + y) >> 1로 계산하는 것이 최선이다.
+		 */
+		
+		// mid = (first+last)/2;
+		mid = (first+last) >> 1;
 
 		if(target == ar[mid])
 			return mid;
-		else
+		else{
 		    target < ar[mid] ? (last = mid - 1) : (first = mid + 1);
+			printf("대입 후-> first:%d  last:%d\n", first, last);
+		}
 	}
 
 	return -1;
@@ -143,7 +183,7 @@ void print_idx(int idx)
 
 int main (void)
 {
-	int arr[] = {1, 3, 5, 7, 9, 11, 13, 15, 17, 19};	// 데이터는 정렬되어 있다.
+	int arr[] = {1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25};	// 데이터는 정렬되어 있다.
 	int idx;	// 타겟의 인덱스
 
 	int menu = 0;
@@ -180,6 +220,11 @@ int main (void)
 				idx = pretty_bsearch(arr, sizeof(arr)/sizeof(int), user_input);
 				print_idx(idx);
 				break;
+			// 여기에도 default대신에 비트 연산자로 정수 경계 연산을 해주면 좋을 것이다.
+			// 공부해 볼 것!
+			default:
+				printf("잘못된 입력입니다.\n");
+				break;
 		}
 	}
 
@@ -187,7 +232,73 @@ exit:
 	exit(1); 
 }
 
-	
+/*
+
+    부록: C와 C++에서 두 수의 평균을 정확하게 구해 봅시다.
+	(주의!: 최종 연산 결과가 overflow조건을 만족한다면, 아래에 소개된 방법은 전부 의미 없다.)
+
+	정수 x와 y가 있다고 하자, 두 수의 산술 평균을 구하기 위해서는 다음과 같이 계산할 수 있다.
+
+	-> (x+y)/2
+
+	사람이 손으로 계산할 때는 별 문제가 없지만,
+	컴퓨터로 계산할 때는 x+y가 overflow가 발생할 만큼 충분히 크다면, 이는 문제가 된다.
+	따라서 넘친 비트를 만회하기 위해서 x와 y중 더 작은 수를 더하면 된다. (서로 같다면 아무거나)
+	여기서는 x가 y보다 작거나 같다고 가정하겠다.
+
+	-> x + ((y-x)/2)
+
+	하지만 이 방법도 0 <= x <= y를 언제나 만족한다면 상관없지만...
+	아니라면? 예를 들어 다음과 같은 상황에서는 오류를 만든다.
+
+	y = 0, x = 1이 되면 (-1)/2 이 계산되면서 문제가 되고,
+	y = 0, x = INT_MIN이 되면 overflow에러가 발생한다.
+
+	그러면 모든 정수에 대해 overflow오류 없는 방법은 없는것일까?
+	있다. 단, 바닥 평균을 구하는 식 따로, 천장 평균을 구하는 식 따로 마련되어 있다.
+
+	다음은 바닥(floor ->  참고문헌을 참조하라) 평균을 overflow에러 없이 구하는 공식이다.
+
+	-> (x & y) + ((x ^ y) >> 1)
+
+	그리고 천장(ceiling) 평균을 에러없이 구하는 공식이다.
+
+	-> (x | y) - ((x ^ y) >> 1)
+
+	절사 평균(truncated average)을 구하는 공식도 있는데, 이는 일단 넘어가도록 한다.
+
+	그리고 앞서 말했듯이 특정한 조건을 만족한다면, 비교적 간단한 식으로도 계산하는데 무리가 없다.
+
+	1. x와 y가 signed int이고 음수가 아님을 보장할 수 있다면, 다음과 같이 계산하면 된다.
+
+	-> (x + y) >> 1
+
+	합에서 overflow가 발생할 수 있지만, 넘침 비트가 합을 담은 레지스터 안에 남아 있으므로,
+	부호 없는 자리이동에 의해 넘침 비트가 적절한 자리로 이동하고 부홉트에는 0이 채워진다.
+
+	2.  x와 y가 unsigned int이면서, x <= y를 만족하거나
+		x와 y가 signed int이면서, x <= y를 만족한다면, 다음과 같이 구할 수 있다.
+
+	-> x + ((y - x) >> 1)
+
+	참고로 이는 바닥 평균이다.
+	여기에 더해, >>를 사용할 경우 미세하지만 /에 비해 성능 이점을 누릴수 있다.
+
+    참고문헌
+   		
+    서적
+
+    * 해커의 기쁨 - 헨리 워렌 22p ~ 23p
+
+    웹페이지
+
+
+	* https://kldp.org/node/122637
+	* https://research.googleblog.com/2006/06/extra-extra-read-all-about-it-nearly.html
+	* https://en.wikipedia.org/wiki/Binary_search_algorithm
+	* https://en.wikipedia.org/wiki/Floor_and_ceiling_functions
+	* https://ko.wikipedia.org/wiki/%EB%B0%94%EB%8B%A5_%ED%95%A8%EC%88%98%EC%99%80_%EC%B2%9C%EC%9E%A5_%ED%95%A8%EC%88%98
+*/
 
 
 	
