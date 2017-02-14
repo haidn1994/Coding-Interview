@@ -55,7 +55,7 @@ int list_remove(struct array_list *plist)
 	int i;
 
 	// 재조정한다. 즉, 삭제를 위한 데이터의 이동을 진행하는 반복문이다.
-	for(i=rm_pos; i<num-1; i++)환
+	for(i=rm_pos; i<num-1; i++)
 		plist->arr[i] = plist->arr[i+1];
 
 	(plist->num_of_data)--;		// 데이터의 수 감소

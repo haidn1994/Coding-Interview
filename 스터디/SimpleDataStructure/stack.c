@@ -51,11 +51,13 @@ void display()
 		return;
 	}
 
-	for(int i = top; i >= 0; i--){	
+	int i, j;
+
+	for(i = top; i >= 0; i--){	
 		putc('+', stdout);
 
 		// 양 옆으로 여백이 2칸은 필요하다.
-		for(int j = 0; j < get_int_position(stack[i-1]) + 2; j++)
+		for(j = 0; j < get_int_position(stack[i-1]) + 2; j++)
 			putc('-', stdout);
 
 		printf("+\n");
@@ -67,6 +69,8 @@ void display()
 
 // 정수의 자리수를 얻는 함수
 // 음수 안됌, 100억이상도 판별 불가능
+
+// 나중에 기수 정렬(Radix sort)에서 중요한 개념으로 사용되므로 주의깊게 볼 것
 int get_int_position (int tar)
 {
 	// 곱셈에 대한 항등원
@@ -113,8 +117,5 @@ int main(){
 
 		}
 	}
-
-
 }
-
 

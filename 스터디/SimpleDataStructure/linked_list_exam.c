@@ -23,7 +23,8 @@
    malloc()은 할당 받고 싶은 힙 메모리의 크기(size_t size)를 인자로 받아서,
    그 메모리의 시작 주소(void *)를 반환한다.
    참고로, 사실 size_t는 unsigned int를 typedef로 숨긴 형태로 주로 메모리의 크기, 
-   배열의 크기를 나타낼 때 사용한다.
+   구체적으로 구조체의 크기, 배열의 크기등을 나타낼 때 사용한다.
+   sizeof()연산자가 반환하는 자료형이 바로 size_t이다.
 
    free()는 malloc()을 통해 할당받은 메모리의 주소를 인자로 받아서,
    해당 메모리를 회수한다.
@@ -74,11 +75,10 @@ int main (void)
 		new_node->next = NULL;
 
 		// 헤드 노드 포인터가 NULL이면 newNode는 헤드에 할당된다.
-
 		if(head == NULL)
 			head = new_node;
 		else
-			tail->next = new_node;	// 이건 tail 구조체의 멤버 포인터
+			tail->next = new_node;	// 이건 tail 구조체의 멤버 포인터(다음 노드를 가리키도록 설계되어 있다.)
 
 		tail = new_node;			// 이건 tail 구조체 포인터
 	}

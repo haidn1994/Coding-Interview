@@ -161,10 +161,10 @@ int queue_is_empty(struct queue *pq)
 
 int next_pos_idx(int pos)
 {
-	if(pos == QUE_LEN - 1)
+	if(pos == QUE_LEN - 1)			// 인덱스가 최대치라면, 0을 반환한다. (이렇게 환형 큐를 구성한다.)
 		return 0;
 	else
-		return pos+1;
+		return pos+1;				
 }
 
 void enqueue(struct queue *pq, int q_data)
@@ -196,6 +196,6 @@ int queue_peek(struct queue *pq)
 		exit(-1);
 	}
 
-	return pq->queue_arr[next_pos_idx(pq->front)];
+	return pq->queue_arr[next_pos_idx(pq->front)];	// 큐의 front를 1 증가시킨 다음, 큐의 데이터를 참조한다.
 }
 
