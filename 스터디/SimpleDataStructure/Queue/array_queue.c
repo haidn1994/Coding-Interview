@@ -25,11 +25,11 @@
 
 	그림으로 표현하면 다음과 같다.
 
-	뒤	Queue					앞
+	앞	Queue					뒤
 	-----------------------------
-->	|	|	|	|	|	|	|	| ->
+<-  |	|	|	|	|	|	|	| <-
 	-----------------------------
-enqueue							  dequeue
+dequeue							  enqueue
 
 	큐는 '뒤로 넣고 앞으로 빼는 자료구조'라고 기억하고 있어도 좋다.
 
@@ -45,25 +45,25 @@ enqueue							  dequeue
 
 	먼저 enqueue 연산시 큐의 상황을 살펴보자. (단, front는 F이고, rear는 R이다.) 
 
-	뒤	Queue					앞
+	앞	Queue					뒤
 	-----------------------------
-->	|A	|	|	|	|	|	|	| ->
+<-  |	|	|	|	|	|	|	| <-
 	-----------------------------
 	F,R
 
 ENQUEUE
 
-	뒤	Queue					앞
+	앞	Queue					뒤
 	-----------------------------
-->	|A	|B	|	|	|	|	|	| ->
+<-  |	|	|	|	|	|	|	| <-
 	-----------------------------
 	F	R
 
 ENQUEUE
 
-	뒤	Queue					앞
+	앞	Queue					뒤
 	-----------------------------
-->	|A	|B	|C	|	|	|	|	| ->
+<-  |	|	|	|	|	|	|	| <-
 	-----------------------------
 	F	    R
 
@@ -73,23 +73,23 @@ ENQUEUE
 	같은 방식으로 만약 dequeue연산을 하게 된다면 F가 전에 가리키고 있던 데이터는 삭제되고, 
 	F가 뒤로 한칸씩 밀려나게 될 것이다. 그런데 여기서 문제가 발생한다. 
 
-	뒤	Queue					앞
+	앞	Queue					뒤
 	-----------------------------
-->	|	|	|	|	|E	|F	|G	| ->
+<-  |	|	|	|	|	|	|	| <-
 	-----------------------------
 				     F		 R
 DEQUEUE
 
-	뒤	Queue					앞
+	앞	Queue					뒤
 	-----------------------------
-->	|	|	|	|	|	|F	|G	| ->
+<-  |	|	|	|	|	|	|	| <-
 	-----------------------------
 						 F	 R
 DEQUEUE
 
-	뒤	Queue					앞
+	앞	Queue					뒤
 	-----------------------------
-->	|	|	|	|	|	|	|G	| ->
+<-  |	|	|	|	|	|	|	| <-
 	-----------------------------
 							 F,R
 
@@ -102,25 +102,25 @@ DEQUEUE
 	dequeue를 할 때마다 데이터를 앞쪽으로 이동하여 R을 앞뒤로 움직일수 있게 하는 방법이 있다.
 	예를 들면 다음과 같다.
 
-	뒤	Queue					앞
+	앞	Queue					뒤
 	-----------------------------
-->	|A	|B	|C	|	|	|	|	| ->
+<-  |	|	|	|	|	|	|	| <-
 	-----------------------------
 	F	    R
 
 DEQUEUE
 
-	뒤	Queue					앞
+	앞	Queue					뒤
 	-----------------------------
-->	|A	|B	|	|	|	|	|	| ->
+<-  |	|	|	|	|	|	|	| <-
 	-----------------------------
 	F	R
 
 DEQUEUE
 
-	뒤	Queue					앞
+	앞	Queue					뒤
 	-----------------------------
-->	|A	|	|	|	|	|	|	| ->
+<-  |	|	|	|	|	|	|	| <-
 	-----------------------------
 	F,R
 
@@ -170,7 +170,7 @@ int next_pos_idx(int pos)
 void enqueue(struct queue *pq, int q_data)
 {
 	if(next_pos_idx(pq->rear) == pq->front){	// 큐가 꽉 찼다면,
-		printf("queue memory error!");
+		printf("queue overflow");
 		exit(-1);
 	}
 
@@ -181,12 +181,28 @@ void enqueue(struct queue *pq, int q_data)
 int dequeue(struct queue *pq)
 {
 	if(queue_is_empty(pq)){
-		printf("queue memory error!");
+		printf("queue empty!");
 		exit(-1);
 	}
 	
 	pq->front = next_pos_idx(pq->front);	// front를 한 칸 이동한다.
 	return pq->queue_arr[pq->front];		// front가 가리키는 데이터를 반환한다.
+}
+
+void print_queue(struct queue *pq)
+{
+	int i, j;
+
+	if(queue_is_empty(pq)){
+		printf("queue empty!");
+		return;
+	}
+
+	printf("front \n|");
+	for(i = pq->front, j = pq->rear; i != j;
+			i = next_pos_idx(i)){
+		printf(" %d |", pq->queue[i]);
+	}
 }
 
 int queue_peek(struct queue *pq)

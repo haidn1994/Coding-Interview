@@ -8,6 +8,14 @@
 	empty의 기준도 -1로 바꾸었다.
 	그리고 display()의 조건식을 그대로 냅뒀더니
 	잘 돌아간다. 왜 그럴까?
+
+	2/16 C는 엽기적인 언어라는 사실을 알았다.
+	배열 인덱스는 0부터 시작하는게 맞지만,
+	심지어 음수를 집어넣어도 조건만(접근 가능한 메모리를 가리키고 있다면)
+	맞는다면 오류도 안뿌리고 알아서 잘 돌아간다.
+
+	알고보니까 부적절한 참조가 일어난건데 내가 모르고 계속 쓴것 같다.
+	C언어가 이렇게 위험합니다. -> 수정함
 */
 
 #include <stdlib.h>
@@ -24,8 +32,8 @@ void push(int d)
 	if(top >= SIZE){
 		printf("stack overflow\n");
 	} else {
-		stack[top] = d;
 		top++;
+		stack[top] = d;
 	}
 }
 
@@ -36,8 +44,8 @@ void pop()
 	if(top == -1){
 		printf("stack underflow\n");
 	} else {
-		printf("pop된 값은? %d\n", stack[top-1]);
-		stack[top-1] = 0;
+		printf("pop된 값은? %d\n", stack[top]);
+		stack[top] = 0;
 		top--;
 	}
 }
@@ -57,11 +65,11 @@ void display()
 		putc('+', stdout);
 
 		// 양 옆으로 여백이 2칸은 필요하다.
-		for(j = 0; j < get_int_position(stack[i-1]) + 2; j++)
+		for(j = 0; j < get_int_position(stack[i]) + 2; j++)
 			putc('-', stdout);
 
 		printf("+\n");
-		printf("| %d |\n", stack[i-1]);
+		printf("| %d |\n", stack[i]);
 	}
 
 	printf("\n");

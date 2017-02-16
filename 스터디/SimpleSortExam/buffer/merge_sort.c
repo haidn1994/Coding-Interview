@@ -70,15 +70,18 @@ void merge_sort(int arr[], int left, int right)
 
 int main(void)
 {
-	int arr[7] = {3, 2, 4, 1, 7, 5, 6};
-	int i;
+	int arr[1000000] = {0,};
+	int i, count;
+
+	scanf("%d", &count);
+
+	for(i = 0; i < count; i++)
+		scanf("%d", &arr[i]);
 
 	// 배열 arr의 전체 영역 정렬
 	merge_sort(arr, 0, sizeof(arr)/sizeof(int)-1);
 
-	for(i = 0; i < 7; i++)
-		printf("%d ", arr[i]);
-
-	printf("\n");
+	for(i = 0; i < count; i++)
+		printf("%d\n", arr[i]);
 	return 0;
 }

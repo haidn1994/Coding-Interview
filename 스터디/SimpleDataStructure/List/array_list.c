@@ -22,7 +22,7 @@ void list_insert(struct array_list *plist, int list_data)
 
 	plist->arr[plist->num_of_data] = list_data;	// 데이터를 저장한다.
 	(plist->num_of_data)++;						// 저장된 데이터의 수 증가
-}// 데이터 저장
+}// 데이터 저장 걸리는 시간은 O(1)
 
 int list_first(struct array_list *plist, int *list_data)
 {
@@ -31,6 +31,7 @@ int list_first(struct array_list *plist, int *list_data)
 
 	(plist->cur_position) = 0;	// 참조위치를 초기화 한다. 즉, 첫 번째 데이터의 참조를 의미한다.
 	*list_data = plist->arr[0];	// list_data가 가리키는 공간에 데이터를 저장한다.
+	// 다시 말해서 위의 코드는 리스트의 첫번째 데이터를 바깥 공간에 넘겨준다.
 	
 	return true;
 }// 첫 데이터 참조
@@ -55,11 +56,13 @@ int list_remove(struct array_list *plist)
 	int i;
 
 	// 재조정한다. 즉, 삭제를 위한 데이터의 이동을 진행하는 반복문이다.
+	// 여기서 ArrayList의 데이터 삭제에 걸리는 시간은 O(n)이라는 사실을 알 수 있다.
 	for(i=rm_pos; i<num-1; i++)
 		plist->arr[i] = plist->arr[i+1];
 
 	(plist->num_of_data)--;		// 데이터의 수 감소
-	(plist->cur_position)--;	// 참조위치를 하나 되돌린다. (이건 구현에 따라 다를 수 있음...?)
+	(plist->cur_position)--;	// 참조위치를 하나 되돌린다. 
+	// 삭제된 데이터를 참조하고 있으면 문제가 생기니까 (하지만 이건 구현에 따라 다를 수 있음...?)
 
 	return rm_data;				// 삭제된 데이터를 반환한다.
 }// 참조한 데이터 삭제
@@ -81,7 +84,7 @@ void list_display_all(struct array_list *plist, int *list_data)
 		printf("%d ", *list_data);
 
 		while(list_next(plist, list_data))
-			printf("%d ", data);
+			printf("%d ",*list_data);
 	}
 
 	printf("\n\n");

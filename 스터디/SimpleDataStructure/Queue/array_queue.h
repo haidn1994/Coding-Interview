@@ -19,6 +19,7 @@ int queue_is_empty(struct queue *pq);
 
 void enqueue(struct queue *pq, int q_data);
 int dequeue(struct queue *pq);
+void print_queue(struct queue *pq);
 void queue_peek(struct queue *pq);
 
 #endif
