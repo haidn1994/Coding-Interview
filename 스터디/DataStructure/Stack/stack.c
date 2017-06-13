@@ -29,7 +29,8 @@ int stack[SIZE] =
 // 스택에 데이터를 집어 넣는다.
 void push(int d)
 {
-	if(top >= SIZE){
+	// -1 ~ n-1까지는 n개 따라서 보정값 -1을 붙인다.
+	if(top >= SIZE - 1){
 		printf("stack overflow\n");
 	} else {
 		top++;
